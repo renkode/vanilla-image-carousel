@@ -5,9 +5,23 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Carousel Demo</title>
+    <link href='https://css.gg/chevron-left.css' rel='stylesheet'>
+    <link href='https://css.gg/chevron-right.css' rel='stylesheet'>
+    <link rel="stylesheet" type="text/css" href="style.scss">
 </head>
 <body>
-    <div>hey</div>
-    <script src="index.js"></script> 
+    <div class="wrapper">
+        <div class="carousel">
+            <div class="left-arrow-container">
+                <div class="left-arrow"><i class="gg-chevron-left"></i></div>
+            </div>
+            <div class="right-arrow-container">
+                <div class="right-arrow"><i class="gg-chevron-right"></i></div>
+            </div>
+            <div class="slot-container"></div>
+            <div class="image-container"></div>
+        </div>
+    </div>
+    <script src="../src/index.js"></script> 
 </body>
 </html>
