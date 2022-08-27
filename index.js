@@ -6,8 +6,8 @@ const rightArrow = document.querySelector(".right-arrow");
 let numImages = 8;
 let imageIndex = 0;
 
-const fetchImages = (num) => {
-  fetch(
+async function fetchImages(num) {
+  await fetch(
     `https://api.thecatapi.com/v1/images/search?limit=${num}&api_key= live_ioaRkIuTfIezHHWkZ6rJsDgLfDiXPG4jk8LrnjfMogBqNp1i9cYOqU1OLFASHIm4`
   )
     .then((res) => res.json())
@@ -27,7 +27,7 @@ const fetchImages = (num) => {
         slotContainer.appendChild(slot);
       });
     });
-};
+}
 
 const changeSlot = (index) => {
   const litSlot = document.querySelector(".lit");
@@ -49,29 +49,31 @@ const updateCarousel = () => {
   console.log(`Current index: ${imageIndex}`);
 };
 
-const changeIndex = (direction) => {
+const changeIndex = (targetIndex) => {
+  if (imageIndex === targetIndex) return;
   let lastIndex = imageContainer.children.length - 1;
-  if (direction === "left") {
-    if (imageIndex === 0) {
-      imageIndex = lastIndex; // circle around
-    } else {
-      imageIndex--;
-    }
-  } else if (direction === "right") {
-    if (imageIndex === lastIndex) {
-      imageIndex = 0; // circle around
-    } else {
-      imageIndex++;
-    }
+  if (targetIndex < 0) {
+    imageIndex = lastIndex;
+  } else if (targetIndex > lastIndex) {
+    imageIndex = 0;
+  } else {
+    imageIndex = targetIndex;
   }
   updateCarousel();
 };
 
 leftArrow.addEventListener("click", () => {
-  changeIndex("left");
+  changeIndex(imageIndex - 1);
 });
 rightArrow.addEventListener("click", () => {
-  changeIndex("right");
+  changeIndex(imageIndex + 1);
 });
 
-fetchImages(numImages);
+// slots do not exist until images are fetched, so must add event listeners after fetch
+fetchImages(numImages).then(() => {
+  Array.from(slotContainer.children).forEach((slot, index) =>
+    slot.addEventListener("click", () => {
+      changeIndex(index);
+    })
+  );
+});
