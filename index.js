@@ -16,29 +16,6 @@ const resetTimer = () => {
   }
 };
 
-async function fetchImages(num) {
-  await fetch(
-    `https://api.thecatapi.com/v1/images/search?limit=${num}&api_key= live_ioaRkIuTfIezHHWkZ6rJsDgLfDiXPG4jk8LrnjfMogBqNp1i9cYOqU1OLFASHIm4`
-  )
-    .then((res) => res.json())
-    .then((data) => {
-      data.forEach((img, index) => {
-        // add images
-        let newImg = document.createElement("img");
-        newImg.src = img.url;
-        newImg.className = "carousel-image";
-        index === 0
-          ? (newImg.style.display = "block")
-          : (newImg.style.display = "none");
-        imageContainer.appendChild(newImg);
-        // add slots
-        let slot = document.createElement("span");
-        index === 0 ? (slot.className = "slot lit") : (slot.className = "slot");
-        slotContainer.appendChild(slot);
-      });
-    });
-}
-
 const changeSlot = (index) => {
   const litSlot = document.querySelector(".lit");
   if (litSlot) litSlot.classList.remove("lit");
@@ -51,6 +28,7 @@ const changeImage = (index) => {
     (img) => img.style.display === "block"
   )[0].style.display = "none"; // hide previously displayed img
   Array.from(imgs)[index].style.display = "block";
+  Array.from(imgs)[index].classList.add("fade-in");
 };
 
 const updateCarousel = () => {
@@ -81,15 +59,38 @@ rightArrow.addEventListener("click", () => {
   resetTimer();
 });
 
-// slots do not exist until images are fetched, so must add event listeners after fetch
-fetchImages(numImages)
-  .then(() => {
-    Array.from(slotContainer.children).forEach((slot, index) =>
-      slot.addEventListener("click", () => {
-        changeIndex(index);
-      })
-    );
-  })
-  .then(() => {
-    timer = setInterval(() => changeIndex(imageIndex + 1), 3500);
-  });
+async function fetchImages(num) {
+  await fetch(
+    `https://api.thecatapi.com/v1/images/search?limit=${num}&api_key= live_ioaRkIuTfIezHHWkZ6rJsDgLfDiXPG4jk8LrnjfMogBqNp1i9cYOqU1OLFASHIm4`
+  )
+    .then((res) => res.json())
+    .then((data) => {
+      data.forEach((img, index) => {
+        // add images
+        let newImg = document.createElement("img");
+        newImg.src = img.url;
+        newImg.className = "carousel-image";
+        index === 0
+          ? (newImg.style.display = "block")
+          : (newImg.style.display = "none");
+        newImg.addEventListener("animationend", (e) => {
+          if (e.animationName === "fadeIn")
+            e.target.classList.remove("fade-in");
+        });
+        imageContainer.appendChild(newImg);
+
+        // add slots
+        let slot = document.createElement("span");
+        index === 0 ? (slot.className = "slot lit") : (slot.className = "slot");
+        slot.addEventListener("click", () => {
+          changeIndex(index);
+        });
+        slotContainer.appendChild(slot);
+      });
+    });
+}
+
+// update carousel every 3.5 sec
+fetchImages(numImages).then(() => {
+  timer = setInterval(() => changeIndex(imageIndex + 1), 3500);
+});
