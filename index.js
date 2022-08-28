@@ -5,6 +5,16 @@ const rightArrow = document.querySelector(".right-arrow");
 
 let numImages = 8;
 let imageIndex = 0;
+let timer;
+
+const resetTimer = () => {
+  try {
+    window.clearInterval(timer);
+    timer = setInterval(() => changeIndex(imageIndex + 1), 3500);
+  } catch {
+    return;
+  }
+};
 
 async function fetchImages(num) {
   await fetch(
@@ -64,16 +74,22 @@ const changeIndex = (targetIndex) => {
 
 leftArrow.addEventListener("click", () => {
   changeIndex(imageIndex - 1);
+  resetTimer();
 });
 rightArrow.addEventListener("click", () => {
   changeIndex(imageIndex + 1);
+  resetTimer();
 });
 
 // slots do not exist until images are fetched, so must add event listeners after fetch
-fetchImages(numImages).then(() => {
-  Array.from(slotContainer.children).forEach((slot, index) =>
-    slot.addEventListener("click", () => {
-      changeIndex(index);
-    })
-  );
-});
+fetchImages(numImages)
+  .then(() => {
+    Array.from(slotContainer.children).forEach((slot, index) =>
+      slot.addEventListener("click", () => {
+        changeIndex(index);
+      })
+    );
+  })
+  .then(() => {
+    timer = setInterval(() => changeIndex(imageIndex + 1), 3500);
+  });

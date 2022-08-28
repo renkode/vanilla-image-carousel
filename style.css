@@ -50,7 +50,6 @@
 }
 
 .left-arrow-container, .right-arrow-container {
-    // background-color: rgba(0, 0, 0, 0.301);
     position: absolute;
     display: flex;
     justify-content: center;
